@@ -8,59 +8,141 @@ var http = require('http');
     function gimmeusers(options, callback){
 
         console.log(" to o -> "+JSON.stringify(typeof options)+" ");
-        
+        console.log(options);
+        var error = {
+            occurs : false,
+            message : ''
+        };
+        var path = '?';
+        var genders = ["female","male"];
+        var nationalities = ["gb","us","au","es","fi","fr","ie","nl"];
+        var formats = ["csv","sql","yaml"];
         var defaults = {
             path : ''
         };
 
-        if(options != undefined){
-            if(options.results!=undefined){
-                if(isNaN(options.results)){
-                    callback('Not a NUmber', null);
-                }
-            }
-        } else {
-            options = defaults;
+
+
+
+        function addToPath(key,value){
+            if(path.length!=1)
+                path = path + '&'+key+"="+value;
+            else
+                path = path + key+"="+value;
         }
 
+        function parseOptions(options, callback){
+            if(options != undefined) {
+                for (var key in options) {
+                    if (key == 'results')
+                        if (isNaN(options.results)) {
+                            error.occurs = true;
+                            error.message = "Bad options : options.results must number between 1 - 10000";
+                            callback(error, null);
+                        }
+                        else if ((options.results < 0) || (options.results > 10000)) {
+                            error.occurs = true;
+                            error.message = "Bad options : options.results must number between 1 - 10000";
+                        }
+                        else {
+                            addToPath(key, options[key]);
+                        }
+                    if (key == 'gender')
+                        if (genders.indexOf(options[key]) > -1) {
+                            addToPath(key, options[key]);
+                        }
+                        else {
+                            error.occurs = true;
+                            error.message = 'Bad options : options.gender must be "male" or "female"';
+                        }
+                    if (key == 'seed')
+                        if (typeof options.seed == "string") {
+                            addToPath(key, options[key]);
+                        }
+                        else {
+                            error.occurs = true;
+                            error.message = 'Bad options : options.seed must be typeof string';
+                        }
+                    if (key == 'nat') {
+                        if (nationalities.indexOf(options[key]) > -1) {
+                            addToPath(key, options[key]);
+                        }
+                        else {
+                            error.occurs = true;
+                            error.message = 'Bad options : options.nat must be one of following : gb, us, au, es, fi, fr, ie or nl';
+                        }
+                    }
+                    if (key == 'format') {
+                        if (formats.indexOf(options[key]) > -1) {
+                            addToPath(key, options[key]);
+                        }
+                        else {
+                            error.occurs = true;
+                            error.message = 'Bad options : options.format must be one of following : csv,sql or yaml';
+                        }
+                    }
+                    if (key == 'key') {
+                        addToPath(key, options[key]);
+                    }
+                }
+                console.log(" error -> \n");
+                console.error(error);
 
-        var reqestOptions = {
-            hostname: 'api.randomuser.me',
-            port: 80,
-            path: options.path,
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+
+                callback(error);
+            } else {
+                options = defaults;
+                callback(null);
             }
-        };
+        }
 
-        /**
-         * ?results=1-10k
-         * &key=ABCD-1234-EFGH-5678
-         * gender=female/male
-         * seed='string'
-         * format=csv,sql,yaml
-         * nat=gb/us/au/es/fi/fr/ie/n;
-         */
+        parseOptions(options, function(error){
+            if(!error.occurs){
+                console.log(" pat -> "+path);
+                
+                var reqestOptions = {
+                    hostname: 'api.randomuser.me',
+                    port: 80,
+                    path: '/'+path,
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                };
 
-        var request = http.request(reqestOptions, function(res) {
-            console.log('STATUS: '+res.statusCode);
-            console.log('HEADERS: '+JSON.stringify(res.headers));
-            res.setEncoding('utf8');
-            res.on('data', function(chunk) {
-                console.log('BODY: '+chunk);
-            });
-            res.on('end', function() {
-                console.log('No more data in response.')
-            })
+                var request = http.request(reqestOptions, function(res) {
+                    var err = false;
+                    var data = {};
+                    console.log('HEADERS: '+JSON.stringify(res.headers));
+                    if(res.statusCode==200){
+                        res.setEncoding('utf8');
+                        res.on('data', function(chunk) {
+                            data += chunk;
+                        });
+                        res.on('end', function() {
+                            callback(err, data);
+                        })
+                    } else {
+                        callback("Status code Error"+res.statusCode, null);
+                    }
+                });
+
+                request.on('error', function(e) {
+                    callback(e, null);
+                });
+                request.end();
+            } else {
+                console.error(" ERROR -> "+JSON.stringify(error.message));
+            }
         });
-
-        request.on('error', function(e) {
-            console.log('problem with request: '+e);
-        });
-
-        // write data to request body
-        request.end();
     };
 //};
-gimmeusers({"results":'adwa'});
+gimmeusers({"results":"10", "gender":"female", "seed":"seed"}, function(err, data){
+    console.log(err);
+    if(err){
+        console.error(" END ERROR -> "+err.message);
+    } else {
+        if(data!=null)
+            console.log(" DATA -> "+data);
+    }
+});
