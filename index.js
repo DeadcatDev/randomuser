@@ -21,9 +21,6 @@ var http = require('http');
             path : ''
         };
 
-
-
-
         function addToPath(key,value){
             if(path.length!=1)
                 path = path + '&'+key+"="+value;
@@ -85,25 +82,23 @@ var http = require('http');
                         addToPath(key, options[key]);
                     }
                 }
-                console.log(" error -> \n");
-                console.error(error);
-
-
-                callback(error);
             } else {
                 options = defaults;
-                callback(null);
             }
+            callback(error);
         }
 
         parseOptions(options, function(error){
             if(!error.occurs){
-                console.log(" pat -> "+path);
+                if(path == '?')
+                    path='/';
+                else
+                    path= '/'+path;
                 
                 var reqestOptions = {
                     hostname: 'api.randomuser.me',
                     port: 80,
-                    path: '/'+path,
+                    path: path,
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -137,7 +132,8 @@ var http = require('http');
         });
     };
 //};
-gimmeusers({"results":"10", "gender":"female", "seed":"seed"}, function(err, data){
+
+gimmeusers({},function(err, data){
     console.log(err);
     if(err){
         console.error(" END ERROR -> "+err.message);
