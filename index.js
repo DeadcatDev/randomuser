@@ -2,10 +2,10 @@
  * Created by adam on 29/01/16.
  */
 var http = require('http');
-'use strict'
+'use strict';
 
-//module.exports = {
-    function gimmeusers(options, callback){
+module.exports = {
+    gimmeusers: function(options, callback){
 
         console.log(" to o -> "+JSON.stringify(typeof options)+" ");
         console.log(options);
@@ -129,15 +129,5 @@ var http = require('http');
                 console.error(" ERROR -> "+JSON.stringify(error.message));
             }
         });
-    };
-//};
-
-gimmeusers({},function(err, data){
-    console.log(err);
-    if(err){
-        console.error(" END ERROR -> "+err.message);
-    } else {
-        if(data!=null)
-            console.log(" DATA -> "+data);
     }
-});
+};

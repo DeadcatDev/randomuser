@@ -1,6 +1,6 @@
 {
   "name": "randomuser",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Simple randomuser.me nodejs wrapper using their API",
   "main": "index.js",
   "scripts": {
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/DeadcatDev/randomuser/issues"
   },
-  "homepage": "https://github.com/DeadcatDev/randomuser#readme"
+  "homepage": "https://github.com/DeadcatDev/randomuser#readme",
+  "dependencies": {
+    "http": "0.0.0"
+  }
 }
