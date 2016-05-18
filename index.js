@@ -36,12 +36,11 @@ var http = require('http');
                             error.occurs = true;
                             error.message = "Bad options : options.results must number between 1 - 10000";
                             callback(error, null);
-                        }
-                        else if ((options.results < 0) || (options.results > 10000)) {
+                        } else
+                        if ((options.results < 0) || (options.results > 10000)) {
                             error.occurs = true;
                             error.message = "Bad options : options.results must number between 1 - 10000";
-                        }
-                        else {
+                        } else {
                             addToPath(key, options[key]);
                         }
                     if (key == 'gender')
