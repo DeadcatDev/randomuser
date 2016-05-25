@@ -7,18 +7,16 @@ const http = require('http');
 class Randomuserme{
 	constructor(options){
 		this.options = options;
+        this.response = {};
 		this.error = {
 			error: false,
 			massage: ''
 		};
 		this.requestOptions = {
-			hostname: 'api.randomuser.me',
-			port: 80,
+			host: 'api.randomuser.me',
+            port: 80,
 			path: this.parsePath(),
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded'
-			}
+			method: 'GET'
 		};
 		this.defaults = {
 			path : '?',
@@ -37,33 +35,29 @@ class Randomuserme{
 	}
 
 	gimmeusers(){
-		console.log(this.requestOptions);
-		let request = http.request(this.requuestOptions, function(res) {
-			let err = false,
-				data = {};
+		console.log("THI.REQUEST -> ", this.requestOptions);
+		let request = http.request(this.requestOptions, function(res) {
+            let data; 
 
-			request.on('error', (e) => {
-				console.log("req error");
-				console.error(" e -> ",e);
-			});
-			
 			console.log('HEADERS: '+JSON.stringify(res.headers));
 			if(res.statusCode==200){
 				res.setEncoding('utf8');
 				res.on('data', function(chunk) {
 					data += chunk;
-					console.log("res data");
-
 				});
 				res.on('end', function() {
-					console.log("res end");
-					// callback(err, data);
+					console.log('data -> ', data);
 				});
 			} else {
 				console.log("error status code");
-				// callback("Status code Error"+res.statusCode, null);
 			}
 		});
+
+		request.on('error', (e) => {
+                console.log("req error");
+            console.error(" e -> ",e);
+        });
+        request.end()
 	}
 
 	parsePath(){
@@ -123,24 +117,6 @@ class Randomuserme{
 		} else {
 			return '';
 		}
-
-		// if(path == '?')
-		// 	path='/';
-		// else
-		// 	path= '/'+path;
-
-
-	}
-
-
-
-	sendRequest(){
-
-
-		// request.on('error', function(e) {
-		// 	callback(e, null);
-		// });
-		// request.end();
 	}
 }
 

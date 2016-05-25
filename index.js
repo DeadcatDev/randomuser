@@ -14,18 +14,16 @@ var Randomuserme = function () {
 		_classCallCheck(this, Randomuserme);
 
 		this.options = options;
+		this.response = {};
 		this.error = {
 			error: false,
 			massage: ''
 		};
 		this.requestOptions = {
-			hostname: 'api.randomuser.me',
+			host: 'api.randomuser.me',
 			port: 80,
 			path: this.parsePath(),
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded'
-			}
+			method: 'GET'
 		};
 		this.defaults = {
 			path: '?',
@@ -44,32 +42,29 @@ var Randomuserme = function () {
 	}, {
 		key: 'gimmeusers',
 		value: function gimmeusers() {
-			console.log(this.requestOptions);
-			var request = http.request(this.requuestOptions, function (res) {
-				var err = false,
-				    data = {};
-
-				request.on('error', function (e) {
-					console.log("req error");
-					console.error(" e -> ", e);
-				});
+			console.log("THI.REQUEST -> ", this.requestOptions);
+			var request = http.request(this.requestOptions, function (res) {
+				var data = void 0;
 
 				console.log('HEADERS: ' + JSON.stringify(res.headers));
 				if (res.statusCode == 200) {
 					res.setEncoding('utf8');
 					res.on('data', function (chunk) {
 						data += chunk;
-						console.log("res data");
 					});
 					res.on('end', function () {
-						console.log("res end");
-						// callback(err, data);
+						console.log('data -> ', data);
 					});
 				} else {
-						console.log("error status code");
-						// callback("Status code Error"+res.statusCode, null);
-					}
+					console.log("error status code");
+				}
 			});
+
+			request.on('error', function (e) {
+				console.log("req error");
+				console.error(" e -> ", e);
+			});
+			request.end();
 		}
 	}, {
 		key: 'parsePath',
@@ -122,20 +117,6 @@ var Randomuserme = function () {
 			} else {
 				return '';
 			}
-
-			// if(path == '?')
-			// 	path='/';
-			// else
-			// 	path= '/'+path;
-		}
-	}, {
-		key: 'sendRequest',
-		value: function sendRequest() {
-
-			// request.on('error', function(e) {
-			// 	callback(e, null);
-			// });
-			// request.end();
 		}
 	}]);
 
