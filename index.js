@@ -70,6 +70,21 @@ var Randomuserme = function () {
 		key: 'parsePath',
 		value: function parsePath() {
 			console.log(this.options);
+			// seed=foobar
+			// page=3&results=10&seed=abc
+
+			// INCLUDE (ONLY) or EXCLUDE (FROM FULL SET)
+			// inc=gender,name,nat || exc=gender,name etc. for
+			// gender, name, location, email, login, registered, dob, phone, cell, id, picture, nat
+
+			// results=5000 for 1-5000
+			// gender=female || male
+			// nat=AU, BR, CA, CH, DE, DK, ES, FI, FR, GB, IE, IR, NL, NZ, TR, US
+			// format=csv for json, pretty, PrettyJSON, CSV, YAML, XML
+			// dl (download ...)
+			// noinfo (no info from system)
+
+			// callback=randomuserdata (test it)
 			if (this.options != undefined) {
 				for (var key in options) {
 					if (key == 'results') if (isNaN(options.results)) {
