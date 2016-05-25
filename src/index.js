@@ -19,11 +19,12 @@ class Randomuserme{
 			method: 'GET'
 		};
 		this.defaults = {
-			path : '?',
+			path : '',
 			gender : ["female","male"],
 			nat : ["au", "br", "ca", "ch", "de", "dk", "es", "fi", "fr", "gb", "ie", "ir", "nl", "nz", "tr", "us"],
 			formats : ["json", "prettyJSON", "pretty", "csv", "sql", "yaml"],
-            incExc : ["gender", "name", "location", "email", "login", "registered", "dob", "phone", "cell", "id", "picture", "nat"]
+            incExc : ["gender", "name", "location", "email", "login", "registered", "dob", "phone", "cell", "id", "picture", "nat"],
+            mic : ["dl", "noinfo", "callback"]
 		};
 		this.gimmeusers();
 	}

@@ -26,10 +26,12 @@ var Randomuserme = function () {
 			method: 'GET'
 		};
 		this.defaults = {
-			path: '?',
-			genders: ["female", "male"],
-			nationalities: ["gb", "us", "au", "es", "fi", "fr", "ie", "nl"],
-			formats: ["csv", "sql", "yaml"]
+			path: '',
+			gender: ["female", "male"],
+			nat: ["au", "br", "ca", "ch", "de", "dk", "es", "fi", "fr", "gb", "ie", "ir", "nl", "nz", "tr", "us"],
+			formats: ["json", "prettyJSON", "pretty", "csv", "sql", "yaml"],
+			incExc: ["gender", "name", "location", "email", "login", "registered", "dob", "phone", "cell", "id", "picture", "nat"],
+			mic: ["dl", "noinfo", "callback"]
 		};
 		this.gimmeusers();
 	}
@@ -75,7 +77,6 @@ var Randomuserme = function () {
 
 			// INCLUDE (ONLY) or EXCLUDE (FROM FULL SET)
 			// inc=gender,name,nat || exc=gender,name etc. for
-			// gender, name, location, email, login, registered, dob, phone, cell, id, picture, nat
 
 			// results=5000 for 1-5000
 			// gender=female || male
