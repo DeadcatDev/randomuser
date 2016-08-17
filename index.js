@@ -14,67 +14,73 @@ var Randomuserme = function () {
 		_classCallCheck(this, Randomuserme);
 
 		this.options = options;
+		this.response = {};
+		this.error = {
+			error: false,
+			massage: ''
+		};
 		this.requestOptions = {
-			hostname: 'api.randomuser.me',
+			host: 'api.randomuser.me',
 			port: 80,
 			path: this.parsePath(),
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded'
-			}
+			method: 'GET'
 		};
 		this.defaults = {
-			path: '?',
-			genders: ["female", "male"],
-			nationalities: ["gb", "us", "au", "es", "fi", "fr", "ie", "nl"],
-			formats: ["csv", "sql", "yaml"]
+			path: '',
+			gender: ["female", "male"],
+			nat: ["au", "br", "ca", "ch", "de", "dk", "es", "fi", "fr", "gb", "ie", "ir", "nl", "nz", "tr", "us"],
+			formats: ["json", "prettyJSON", "pretty", "csv", "sql", "yaml"],
+			incExc: ["gender", "name", "location", "email", "login", "registered", "dob", "phone", "cell", "id", "picture", "nat"],
+			mic: ["dl", "noinfo", "callback"]
 		};
 		this.gimmeusers();
 	}
 
-	_createClass(Randomuserme, [{
-		key: 'addToPath',
-		value: function addToPath(path) {
-			if (path.length != 1) path = path + '&' + key + "=" + value;else path = path + key + "=" + value;
-		}
-	}, {
-		key: 'gimmeusers',
-		value: function gimmeusers() {
-			console.log(this.requestOptions);
-			var request = http.request(this.requuestOptions, function (res) {
-				var err = false,
-				    data = {};
-
-				request.on('error', function (e) {
-					console.log("req error");
-					console.error(" e -> ", e);
-				});
+        function addToPath(key,value){
+            if(path.length!=1)
+                path = path + '&'+key+"="+value;
+            else
+                path = path + key+"="+value;
+        }
 
 				console.log('HEADERS: ' + JSON.stringify(res.headers));
 				if (res.statusCode == 200) {
 					res.setEncoding('utf8');
 					res.on('data', function (chunk) {
 						data += chunk;
-						console.log("res data");
 					});
 					res.on('end', function () {
-						console.log("res end");
-						// callback(err, data);
-					});
-					res.on('error', function () {
-						console.log(' Conn error -> ', res);
-						// callback(err, null);
+						console.log('data -> ', data);
 					});
 				} else {
-						console.log("error status code");
-						// callback("Status code Error"+res.statusCode, null);
-					}
+					console.log("error status code");
+				}
 			});
+
+			request.on('error', function (e) {
+				console.log("req error");
+				console.error(" e -> ", e);
+			});
+			request.end();
 		}
 	}, {
 		key: 'parsePath',
 		value: function parsePath() {
 			console.log(this.options);
+			// seed=foobar
+			// page=3&results=10&seed=abc
+
+			// INCLUDE (ONLY) or EXCLUDE (FROM FULL SET)
+			// inc=gender,name,nat || exc=gender,name etc. for
+
+			// results=5000 for 1-5000
+			// gender=female || male
+			// nat=AU, BR, CA, CH, DE, DK, ES, FI, FR, GB, IE, IR, NL, NZ, TR, US
+			// format=csv for json, pretty, PrettyJSON, CSV, YAML, XML
+			// dl (download ...)
+			// noinfo (no info from system)
+
+			// callback=randomuserdata (test it)
 			if (this.options != undefined) {
 				for (var key in options) {
 					if (key == 'results') if (isNaN(options.results)) {
@@ -122,24 +128,50 @@ var Randomuserme = function () {
 			} else {
 				return '';
 			}
-
-			// if(path == '?')
-			// 	path='/';
-			// else
-			// 	path= '/'+path;
-		}
-	}, {
-		key: 'sendRequest',
-		value: function sendRequest() {
-
-			// request.on('error', function(e) {
-			// 	callback(e, null);
-			// });
-			// request.end();
 		}
 	}]);
 
-	return Randomuserme;
-}();
+        parseOptions(options, function(error){
+            if(!error.occurs){
+                if(path == '?')
+                    path='/';
+                else
+                    path= '/'+path;
+                
+                var reqestOptions = {
+                    hostname: 'api.randomuser.me',
+                    port: 80,
+                    path: path,
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                };
 
-module.exports = Randomuserme;
+                var request = http.request(reqestOptions, function(res) {
+                    var err = false;
+                    var data = {};
+                    console.log('HEADERS: '+JSON.stringify(res.headers));
+                    if(res.statusCode==200){
+                        res.setEncoding('utf8');
+                        res.on('data', function(chunk) {
+                            data += chunk;
+                        });
+                        res.on('end', function() {
+                            callback(err, data);
+                        })
+                    } else {
+                        callback("Status code Error"+res.statusCode, null);
+                    }
+                });
+
+                request.on('error', function(e) {
+                    callback(e, null);
+                });
+                request.end();
+            } else {
+                console.error(" ERROR -> "+JSON.stringify(error.message));
+            }
+        });
+    }
+};
